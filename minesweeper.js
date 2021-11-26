@@ -1,6 +1,6 @@
 // Logic of game
 
-const TILE_STATUSES = {
+export const TILE_STATUSES = {
   HIDDEN: "hidden",
   MINE: "mine",
   NUMBER: "number",
@@ -61,4 +61,19 @@ const positionsMatch = (a, b) => {
 
 const getRandomNumber = (size) => {
   return Math.floor(Math.random() * size);
+};
+
+export const markTile = (tile) => {
+  if (
+    tile.status !== TILE_STATUSES.HIDDEN &&
+    tile.status !== TILE_STATUSES.MARKED
+  ) {
+    return;
+  }
+
+  if (tile.status === TILE_STATUSES.HIDDEN) {
+    tile.status = TILE_STATUSES.MARKED;
+  } else {
+    tile.status = TILE_STATUSES.HIDDEN;
+  }
 };
