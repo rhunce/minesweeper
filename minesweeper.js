@@ -77,3 +77,55 @@ export const markTile = (tile) => {
     tile.status = TILE_STATUSES.HIDDEN;
   }
 };
+
+export const revealTile = (board, tile) => {
+  if (tile.status !== TILE_STATUSES.HIDDEN) {
+    return;
+  }
+
+  if (tile.mine) {
+    tile.status = TILE_STATUSES.MINE;
+    return;
+  }
+
+  tile.status = TILE_STATUSES.NUMBER;
+
+  const adjacentTiles = nearbyTiles(board, tile);
+  const mines = adjacentTiles.filter(tile => tile.mine);
+  if (mines.length === 0) {
+    adjacentTiles.forEach(revealTile.bind(null, board));
+  } else {
+    tile.element.textContent = mines.length;
+  }
+}
+
+const nearbyTiles = (board, { x, y }) => {
+  const tiles = []
+
+  for (let xOffset = -1; xOffset <= 1; xOffset++) {
+    for (let yOffset = -1; yOffset <= 1; yOffset++) {
+      const tile = board[x + xOffset]?.[y + yOffset];
+      if (tile) {
+        tiles.push(tile);
+      }
+    }
+  }
+
+  return tiles;
+};
+
+export const checkWin = (board) => {
+  return board.every(row => {
+    return row.every(tile => {
+      return tile.status === TILE_STATUSES.NUMBER || (tile.mine && (tile.status === TILE_STATUSES.HIDDEN || tile.status === TILE_STATUSES.MARKED))
+    })
+  })
+};
+
+export const checkLose = (board) => {
+  return board.some(row => {
+    return row.some(tile => {
+      return tile.status === TILE_STATUSES.MINE;
+    })
+  })
+};
